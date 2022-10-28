@@ -79,7 +79,7 @@ function addScore(username, problem, contents) {
 		const currentScore = user.scores[problem] || 0;
 		const highestScore = Math.max(currentScore, contents);
 
-		const submitCount = (user.highestScores.submitCounts[problem] || 0) + 1;
+		const submitCount = (user.highestScores && user.highestScores.submitCounts && user.highestScores.submitCounts[problem] || 0) + 1;
 
 		UserLog.update({_id: user._id}, {
 			$set: {
