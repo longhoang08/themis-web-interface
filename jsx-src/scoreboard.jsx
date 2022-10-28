@@ -30,15 +30,16 @@ class Main extends React.Component {
 			  if (response.status !== 200) return;
 			  const {problems, contestants} = response.data;
 			  contestants.forEach(contestant => {
-				  console.log({contestant})
+				  console.log({contestant});
 				  const submitCounts = contestant.submitCounts;
-				  console.log({submitCounts})
+				  console.log({submitCounts});
 				  problems.forEach(problem => {
 					  contestant[problem] = `${(contestant[problem] || 0).padEnd(5)} | ${submitCounts[problem] || 0}`;
 				  });
-				  delete contestant.submitCounts
+				  delete contestant.submitCounts;
 			  });
-			  this.setState(Object.assign({}, response.data, {lastUpdated: new Date()}));
+			  this.setState({problems, contestants, lastUpdated: new Date()});
+		  )
 		  })
 		  .catch(() => { // Pass error
 		  });
