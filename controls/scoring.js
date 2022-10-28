@@ -19,21 +19,24 @@ const highestScores = {};
  */
 function addScore(user, problem, verdict) {
 	const score = (isNaN(Number(verdict)) ? 0 : Number(verdict));
+
+
 	if (!scores[user]) scores[user] = {total: 0};
-	if (!highestScores[user]) highestScores[user] = {total: 0};
-
 	if (!scores[user][problem]) scores[user][problem] = 0;
-	if (!highestScores[user][problem]) highestScores[user][problem] = 0;
-
 	scores[user].total += score - scores[user][problem];
 	scores[user][problem] = score;
 
-
+	if (!highestScores[user]) highestScores[user] = {total: 0, submitCounts: {}};
+	if (!highestScores[user][problem]) highestScores[user][problem] = 0;
 	const prevScore = highestScores[user][problem];
 	highestScores[user][problem] = Math.max(highestScores[user][problem], score);
 	highestScores[user].total += highestScores[user][problem] - prevScore;
 
-	debug(`New score ${score} for ${user} on ${problem}. Highest score: ${highestScores[user][problem]}`);
+	const {submitCounts} = highestScores[user];
+	if (!submitCounts[problem]) submitCounts[problem] = 0;
+	submitCounts[problem] += 1;
+
+	debug(`New score ${score} for ${user} on ${problem}. Highest score: ${highestScores[user][problem]}. Submit count: ${submitCounts[problem]}`);
 }
 
 module.exports = {

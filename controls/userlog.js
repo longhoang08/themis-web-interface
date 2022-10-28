@@ -26,7 +26,7 @@ function addUser(username, cb = () => {
 		if (err) return cb(err);
 		if (user === null) {
 			UserLog.insert({
-				username: username, submits: {}, scores: {}, highestScores: {}
+				username: username, submits: {}, scores: {}, highestScores: {submitCounts: {}}
 			}, (err, user) => {
 				if (cb) cb(err, user);
 			});
@@ -56,7 +56,9 @@ function addSubmit(username, filename, contents) {
 			return; // Can't happen
 		}
 		UserLog.update({_id: user._id}, {
-			$set: {[`submits.${filename}`]: md5(contents.replace(/\s/g, ''))}
+			$set: {
+				[`submits.${filename}`]: md5(contents.replace(/\s/g, '')),
+			}
 		});
 	});
 }
@@ -76,8 +78,15 @@ function addScore(username, problem, contents) {
 		}
 		const currentScore = user.scores[problem] || 0;
 		const highestScore = Math.max(currentScore, contents);
+
+		const submitCount = (user.highestScores.submitCounts[problem] || 0) + 1;
+
 		UserLog.update({_id: user._id}, {
-			$set: {[`scores.${problem}`]: contents, [`highestScores.${problem}`]: highestScore}
+			$set: {
+				[`scores.${problem}`]: contents,
+				[`highestScores.${problem}`]: highestScore,
+				[`highestScores.submitCount.${problem}`]: submitCount,
+			}
 		});
 	});
 }
