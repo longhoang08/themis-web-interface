@@ -39,7 +39,6 @@ class Main extends React.Component {
 				  delete contestant.submitCounts;
 			  });
 			  this.setState({problems, contestants, lastUpdated: new Date()});
-		  )
 		  })
 		  .catch(() => { // Pass error
 		  });
