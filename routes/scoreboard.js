@@ -9,7 +9,7 @@ router.use((req, res, next) => {
 });
 
 router.use((req, res, next) => {
-	const scoreboard = Object.keys(Scoring.scores).map(key => Object.assign({}, Scoring.scores[key], { name: key }));
+	const scoreboard = Object.keys(Scoring.highestScores).map(key => Object.assign({}, Scoring.highestScores[key], { name: key }));
 	const problems = [];
 	for (let u of scoreboard) {
 		for (let p of Object.keys(u)) {

@@ -11,8 +11,7 @@ const path = require('path');
 const md5 = require('md5');
 
 const UserLog = new nedb({
-	filename: path.join(process.cwd(), 'data', '.userlog.db'),
-	autoload: true
+	filename: path.join(process.cwd(), 'data', '.userlog.db'), autoload: true
 });
 
 /**
@@ -20,15 +19,14 @@ const UserLog = new nedb({
  * @param {string} 		username The user's username.
  * @param {Function} 	cb		   The callback function.
  */
-function addUser(username, cb = () => {}) {
+function addUser(username, cb = () => {
+}) {
 	// Adds a new user.
-	UserLog.findOne({ username: username }, (err, user) => {
+	UserLog.findOne({username: username}, (err, user) => {
 		if (err) return cb(err);
 		if (user === null) {
 			UserLog.insert({
-				username: username,
-				submits: { },
-				scores: { }
+				username: username, submits: {}, scores: {}, highestScores: {}
 			}, (err, user) => {
 				if (cb) cb(err, user);
 			});
@@ -42,7 +40,7 @@ function addUser(username, cb = () => {}) {
  * @param  {Function} cb       The callback function (err, log) => { }
  */
 function getUser(username, cb) {
-	UserLog.findOne({ username: username }, cb);
+	UserLog.findOne({username: username}, cb);
 }
 
 /**
@@ -54,10 +52,11 @@ function getUser(username, cb) {
 function addSubmit(username, filename, contents) {
 	getUser(username, (err, user) => {
 		if (err) {
-			debug(err); return; // Can't happen
+			debug(err);
+			return; // Can't happen
 		}
-		UserLog.update({ _id: user._id }, {
-			$set: { [`submits.${filename}`]: md5(contents.replace(/\s/g, '')) }
+		UserLog.update({_id: user._id}, {
+			$set: {[`submits.${filename}`]: md5(contents.replace(/\s/g, ''))}
 		});
 	});
 }
@@ -72,16 +71,17 @@ function addSubmit(username, filename, contents) {
 function addScore(username, problem, contents) {
 	getUser(username, (err, user) => {
 		if (err) {
-			debug(err); return; // Can't happen
+			debug(err);
+			return; // Can't happen
 		}
-		UserLog.update({ _id: user._id }, {
-			$set: { [`scores.${problem}`]: contents }
+		const currentScore = user.scores[problem] || 0;
+		const highestScore = Math.max(currentScore, contents);
+		UserLog.update({_id: user._id}, {
+			$set: {[`scores.${problem}`]: contents, [`highestScores.${problem}`]: highestScore}
 		});
 	});
 }
 
 module.exports = {
-	addUser: addUser,
-	addSubmit: addSubmit,
-	addScore: addScore
+	addUser: addUser, addSubmit: addSubmit, addScore: addScore
 };
