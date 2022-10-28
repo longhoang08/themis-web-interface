@@ -137,6 +137,10 @@ User.find = function (username) {
 	return (username in User.Users ? User.Users[username] : null);
 };
 
+User.getList = function () {
+	return User.Users
+};
+
 /**
  * Adds an user to the XML file
  * @param {string}   username The new user's username

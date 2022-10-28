@@ -9,7 +9,7 @@ const debug = require('debug')('themis:scoring');
 
 
 const getScore = () => {
-	const users = UserLog.Users;
+	const users = UserLog.getList();
 	console.log(users);
 	debug(users);
 };
