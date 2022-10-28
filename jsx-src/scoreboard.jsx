@@ -32,7 +32,7 @@ class Main extends React.Component {
 			  contestants.forEach(contestant => {
 				  const submitCounts = contestant.submitCounts;
 				  problems.forEach(problem => {
-					  contestant[problem] = `${(contestant[problem] || 0).padEnd(5)} | ${submitCounts[problem] || 0}`;
+					  contestant[problem] = `${`${(contestant[problem] || 0)}`.padEnd(5)} | ${submitCounts[problem] || 0}`;
 				  });
 				  delete contestant.submitCounts;
 			  });
