@@ -26,7 +26,7 @@ xmlWriter.flag = false;
  * neccessary.
  * @method build
  */
-xmlWriter.build = function() {
+xmlWriter.build = function () {
 	if (!this.flag) return this.emit('build-finish');
 	debug('account.xml being updated.');
 	this.flag = false;
@@ -38,7 +38,9 @@ xmlWriter.build = function() {
 };
 // On build finish, perform a check later.
 xmlWriter.on('build-finish', () => {
-	setTimeout(() => { xmlWriter.build(); }, 1000);
+	setTimeout(() => {
+		xmlWriter.build();
+	}, 1000);
 });
 // Perform the first build.
 xmlWriter.build();
@@ -48,27 +50,27 @@ xmlWriter.build();
  */
 class User {
 	/**
-	* Constructs an user
-	* @param {string} username The user's username, which the user will use to login.
-	* @param {string} password The user's password, which the user will use to login.
-	* @param {string} name     The user's display name, which shows on the scoreboard.
-	* @param {XMLRow} row      The user's row in the XML file.
-	*/
+	 * Constructs an user
+	 * @param {string} username The user's username, which the user will use to login.
+	 * @param {string} password The user's password, which the user will use to login.
+	 * @param {string} name     The user's display name, which shows on the scoreboard.
+	 * @param {XMLRow} row      The user's row in the XML file.
+	 */
 	constructor(username, password, name, row) {
 		/**
-		* The user's username.
-		* @type {string}
-		*/
+		 * The user's username.
+		 * @type {string}
+		 */
 		this.username = username;
 		/**
-		* The user's password - md5 hashed.
-		* @type {string}
-		*/
+		 * The user's password - md5 hashed.
+		 * @type {string}
+		 */
 		this.password = password;
 		/**
-		* The user's display name.
-		* @type {string}
-		*/
+		 * The user's display name.
+		 * @type {string}
+		 */
 		this.name = name;
 		/**
 		 * The user's row in xmlFile.
@@ -78,7 +80,10 @@ class User {
 		UserLog.addUser(this.username);
 		debug(`User ${this.name} added.`);
 	}
-	save(cb = err => { if (err) debug(err); }) {
+
+	save(cb = err => {
+		if (err) debug(err);
+	}) {
 		this.row.Cell[1].Data[0]._ = this.username;
 		this.row.Cell[2].Data[0]._ = this.password;
 		// The following line fixes the bug where the XML
@@ -92,15 +97,16 @@ class User {
 		xmlWriter.once('build-start', cb);
 	}
 }
+
 /**
-* The list of all Users
-* @type {Array<String>}
-*/
+ * The list of all Users
+ * @type {Array<String>}
+ */
 User.Users = {};
 
 /**
-* Scans the .xml file and list all users.
-*/
+ * Scans the .xml file and list all users.
+ */
 (function scanUsers() {
 	fs.readFile(path.join(process.cwd(), 'data', 'account.xml'), (err, file) => {
 		if (err) throw new Error('Please setup data/account.xml!');
@@ -130,16 +136,13 @@ User.Users = {};
 })();
 
 /**
-* Find an user with the specified username.
-* @returns {User} The user found, or null.
-*/
+ * Find an user with the specified username.
+ * @returns {User} The user found, or null.
+ */
 User.find = function (username) {
 	return (username in User.Users ? User.Users[username] : null);
 };
 
-User.getList = function () {
-	return User.Users
-};
 
 /**
  * Adds an user to the XML file
@@ -148,96 +151,73 @@ User.getList = function () {
  * @param {string}   name     The new user's display name
  * @param {Function} callback
  */
-User.add = function({
-	username,
-	password,
-	name
+User.add = function ({
+	username, password, name
 }, callback) {
 	if (User.Users[username] !== undefined) return callback(new Error('Username already exists'));
 	const Rows = xmlFile.Workbook.Worksheet[0].Table[0].Row;
 	const newRow = {
 		'$': {
 			'ss:AutoFitHeight': '0'
-		},
-		Cell: [
-			{
-				'$': {
-					'ss:StyleID': 's68'
-				},
-				Data: [
-					{
-						_: '0',
-						'$': {
-							'ss:Type': 'Number'
-						}
-					}
-				]
-			}, {
-				'$': {
-					'ss:StyleID': 's68'
-				},
-				Data: [
-					{
-						_: username,
-						'$': {
-							'ss:Type': 'String'
-						}
-					}
-				]
-			}, {
-				'$': {
-					'ss:StyleID': 's68'
-				},
-				Data: [
-					{
-						_: md5(password),
-						'$': {
-							'ss:Type': 'String'
-						}
-					}
-				]
-			}, {
-				'$': {
-					'ss:StyleID': 's68'
-				},
-				Data: [
-					{
-						_: name,
-						'$': {
-							'ss:Type': 'String'
-						}
-					}
-				]
-			}, {
-				'$': {
-					'ss:StyleID': 's68'
-				},
-				Data: [
-					{
-						_: '1',
-						'$': {
-							'ss:Type': 'Number'
-						}
-					}
-				]
-			}, {
-				'$': {
-					'ss:StyleID': 's68'
+		}, Cell: [{
+			'$': {
+				'ss:StyleID': 's68'
+			}, Data: [{
+				_: '0', '$': {
+					'ss:Type': 'Number'
 				}
-			}, {
-				'$': {
-					'ss:StyleID': 's68'
+			}]
+		}, {
+			'$': {
+				'ss:StyleID': 's68'
+			}, Data: [{
+				_: username, '$': {
+					'ss:Type': 'String'
 				}
-			}, {
-				'$': {
-					'ss:StyleID': 's68'
+			}]
+		}, {
+			'$': {
+				'ss:StyleID': 's68'
+			}, Data: [{
+				_: md5(password), '$': {
+					'ss:Type': 'String'
 				}
+			}]
+		}, {
+			'$': {
+				'ss:StyleID': 's68'
+			}, Data: [{
+				_: name, '$': {
+					'ss:Type': 'String'
+				}
+			}]
+		}, {
+			'$': {
+				'ss:StyleID': 's68'
+			}, Data: [{
+				_: '1', '$': {
+					'ss:Type': 'Number'
+				}
+			}]
+		}, {
+			'$': {
+				'ss:StyleID': 's68'
 			}
-		]
+		}, {
+			'$': {
+				'ss:StyleID': 's68'
+			}
+		}, {
+			'$': {
+				'ss:StyleID': 's68'
+			}
+		}]
 	};
 	Rows[Object.keys(User.Users).length + 1] = newRow;
 	User.Users[username] = new User(username, md5(password), name, newRow);
-	User.Users[username].save(() => { callback(null); });
+	User.Users[username].save(() => {
+		callback(null);
+	});
 };
 
 
