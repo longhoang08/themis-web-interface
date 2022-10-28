@@ -31,11 +31,12 @@ class Main extends React.Component {
 			  const {problems, contestants} = response.data;
 			  contestants.forEach(contestant => {
 				  console.log({contestant})
-				  console.log({submitCounts})
 				  const submitCounts = contestant.submitCounts;
+				  console.log({submitCounts})
 				  problems.forEach(problem => {
 					  contestant[problem] = `${(contestant[problem] || 0).padEnd(5)} | ${submitCounts[problem] || 0}`;
 				  });
+				  delete contestant.submitCounts
 			  });
 			  this.setState(Object.assign({}, response.data, {lastUpdated: new Date()}));
 		  })
