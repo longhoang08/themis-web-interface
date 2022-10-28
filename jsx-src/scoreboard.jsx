@@ -30,6 +30,8 @@ class Main extends React.Component {
 			  if (response.status !== 200) return;
 			  const {problems, contestants} = response.data;
 			  contestants.forEach(contestant => {
+				  console.log({contestant})
+				  console.log({submitCounts})
 				  const submitCounts = contestant.submitCounts;
 				  problems.forEach(problem => {
 					  contestant[problem] = `${(contestant[problem] || 0).padEnd(5)} | ${submitCounts[problem] || 0}`;

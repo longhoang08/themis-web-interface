@@ -11,25 +11,20 @@ const vfs = require('vinyl-fs');
 const yarn = require('gulp-yarn');
 const clean = require('gulp-clean');
 
-gulp.task('default', ['build']);
-
-gulp.task('render-jsx', ['render-jsx-index', 'render-jsx-scoreboard']);
 
 function jsxRender(entry, filename) {
 	let b = browserify({
-		entries: entry,
-		debug: false
+		entries: entry, debug: false
 	})
-		.transform('babelify', {
-			presets: ['env', 'react']
-		})
-		.transform(envify, { global: true })
-		.bundle()
-		.pipe(source(filename))
-		.pipe(buffer());
-	if (process.env.NODE_ENV === 'production')
-		b = b.pipe(uglify());
-	return b.pipe(gulp.dest('public/js')).pipe(require('gulp-gzip')({ level: 9 })).pipe(gulp.dest('public/js'));
+	  .transform('babelify', {
+		  presets: ['env', 'react']
+	  })
+	  .transform(envify, {global: true})
+	  .bundle()
+	  .pipe(source(filename))
+	  .pipe(buffer());
+	if (process.env.NODE_ENV === 'production') b = b.pipe(uglify());
+	return b.pipe(gulp.dest('public/js')).pipe(require('gulp-gzip')({level: 9})).pipe(gulp.dest('public/js'));
 }
 
 gulp.task('render-jsx-index', () => {
@@ -40,28 +35,26 @@ gulp.task('render-jsx-scoreboard', () => {
 	return jsxRender('jsx-src/scoreboard.jsx', 'scoreboard.js');
 });
 
+gulp.task('render-jsx', gulp.series('render-jsx-index', 'render-jsx-scoreboard'));
+
+
 function jsxWatch(entry, filename) {
 	let a = browserify({
-		entries: entry,
-		debug: true,
-		cache: {},
-		packageCache: {},
-		plugin: [watchify],
-		transform: [['babelify', {
+		entries: entry, debug: true, cache: {}, packageCache: {}, plugin: [watchify], transform: [['babelify', {
 			presets: ['react', 'env']
 		}]]
 	});
 	a.transform(envify, {global: true});
 	a.on('update', () => {
 		a.bundle()
-		.pipe(source(filename))
-		.pipe(buffer())
-		.pipe(gulp.dest('public/js'));
+		  .pipe(source(filename))
+		  .pipe(buffer())
+		  .pipe(gulp.dest('public/js'));
 	});
 	a.bundle()
-	.pipe(source(filename))
-	.pipe(buffer())
-	.pipe(gulp.dest('public/js'));
+	  .pipe(source(filename))
+	  .pipe(buffer())
+	  .pipe(gulp.dest('public/js'));
 	a.on('log', debug);
 }
 
@@ -70,9 +63,12 @@ gulp.task('watch', () => {
 	jsxWatch('jsx-src/scoreboard.jsx', 'scoreboard.js');
 });
 
-gulp.task('build', ['pre-build', 'build-copy-files', 'version-info', 'yarn-build', 'clean-yarn-files', 'zip', 'post-build']);
+gulp.task('verify-npm', () => {
+	if (process.env.npm_package_version === undefined) throw new Error('Script must be run from yarn / npm!');
+});
 
-gulp.task('pre-build', ['verify-npm'], done => {
+
+gulp.task('pre-build', gulp.series('verify-npm'), done => {
 	require('fs').stat('.build', err => {
 		if (err) return done();
 		debug('Cleaning up old build');
@@ -80,72 +76,50 @@ gulp.task('pre-build', ['verify-npm'], done => {
 	});
 });
 
-gulp.task('build-copy-files', ['pre-build', 'render-jsx'], () => {
+
+gulp.task('build-copy-files', gulp.series('pre-build', 'render-jsx'), () => {
 	const merge = require('merge-stream');
-	return merge(
-		vfs.src([
-			'./**/*',
-			'!./dist',
-			'!./dist/**/*',
-			'!./jsx-src',
-			'!./jsx-src/**/*',
-			'!./node_modules',
-			'!./node_modules/**/*',
-			'!./.*',
-			'!./.*/**/*',
-			'!./gulpfile.js',
-			'!./config.sample.js',
-			'!./config.js',
-			'!./data/submit/*',
-			'./data/submit/readme.md',
-			'!./data/submit/logs/*',
-			'!./data/files/*',
-			'!./data/account.xml',
-			'!./data/account.sample.xml',
-			'./data/files/readme.md',
-			'!./tests/**/*',
-			'!./public/js/*.js'
-		], { follow: true }).pipe(gulpDebug()).pipe(gulp.dest('./.build')),
-		vfs.src('./config.sample.js')
-			.pipe(require('gulp-rename')('config.js'))
-			.pipe(gulpDebug())
-			.pipe(gulp.dest('./.build')),
-		vfs.src('./data/account.sample.xml')
-			.pipe(require('gulp-rename')('data/account.xml'))
-			.pipe(gulpDebug())
-			.pipe(gulp.dest('./.build'))
-	);
+	return merge(vfs.src(['./**/*', '!./dist', '!./dist/**/*', '!./jsx-src', '!./jsx-src/**/*', '!./node_modules', '!./node_modules/**/*', '!./.*', '!./.*/**/*', '!./gulpfile.js', '!./config.sample.js', '!./config.js', '!./data/submit/*', './data/submit/readme.md', '!./data/submit/logs/*', '!./data/files/*', '!./data/account.xml', '!./data/account.sample.xml', './data/files/readme.md', '!./tests/**/*', '!./public/js/*.js'], {follow: true}).pipe(gulpDebug()).pipe(gulp.dest('./.build')), vfs.src('./config.sample.js')
+	  .pipe(require('gulp-rename')('config.js'))
+	  .pipe(gulpDebug())
+	  .pipe(gulp.dest('./.build')), vfs.src('./data/account.sample.xml')
+	  .pipe(require('gulp-rename')('data/account.xml'))
+	  .pipe(gulpDebug())
+	  .pipe(gulp.dest('./.build')));
 });
 
-gulp.task('yarn-build', ['build-copy-files'], () => {
-	return gulp.src(['./.build/package.json'])
-	.pipe(gulp.dest('./.build'))
-	.pipe(yarn({ production: true }));
-});
-
-gulp.task('version-info', ['build-copy-files'], () => {
+gulp.task('version-info', gulp.series('build-copy-files'), () => {
 	require('fs').writeFileSync('./.build/twi.version', `v${process.env.npm_package_version}`);
 	return;
 });
 
-gulp.task('clean-yarn-files', ['yarn-build'], () => {
-	return gulp.src(['./.build/package.json', './.build/yarn.lock', './.build/gulp_copydeps.js'], { read: false })
-	.pipe(clean());
+
+gulp.task('yarn-build', gulp.series('build-copy-files'), () => {
+	return gulp.src(['./.build/package.json'])
+	  .pipe(gulp.dest('./.build'))
+	  .pipe(yarn({production: true}));
 });
 
-gulp.task('verify-npm', () => {
-	if (process.env.npm_package_version === undefined)
-		throw new Error('Script must be run from yarn / npm!');
+gulp.task('clean-yarn-files', gulp.series('yarn-build'), () => {
+	return gulp.src(['./.build/package.json', './.build/yarn.lock', './.build/gulp_copydeps.js'], {read: false})
+	  .pipe(clean());
 });
 
-gulp.task('zip', ['clean-yarn-files'], () => {
+gulp.task('zip', gulp.series('clean-yarn-files'), () => {
 	return gulp.src('./.build/**/*')
-	.pipe(gulpDebug())
-	.pipe(require('gulp-zip')(`${process.env.npm_package_name}_v${process.env.npm_package_version}_${require('moment')().format('YYYYMMDD-HHmmss')}.zip`))
-	.pipe(gulp.dest('./dist'));
+	  .pipe(gulpDebug())
+	  .pipe(require('gulp-zip')(`${process.env.npm_package_name}_v${process.env.npm_package_version}_${require('moment')().format('YYYYMMDD-HHmmss')}.zip`))
+	  .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('post-build', ['zip'], () => {
-	return vfs.src(['./.build'], { read: false })
-	.pipe(clean());
+gulp.task('post-build', gulp.series('zip'), () => {
+	return vfs.src(['./.build'], {read: false})
+	  .pipe(clean());
 });
+
+
+
+gulp.task('build', gulp.series('pre-build', 'build-copy-files', 'version-info', 'yarn-build', 'clean-yarn-files', 'zip', 'post-build'));
+
+gulp.task('default', gulp.series('build'));
+
