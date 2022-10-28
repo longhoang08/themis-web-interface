@@ -1,4 +1,3 @@
-const UserLog = require('./user');
 const debug = require('debug')('themis:scoring');
 
 /**
@@ -8,12 +7,7 @@ const debug = require('debug')('themis:scoring');
  */
 
 
-const getScore = () => {
-	const users = UserLog.getList();
-	console.log(users);
-	debug(users);
-};
-const scores = getScore();
+const scores = {};
 const highestScores = {};
 
 
