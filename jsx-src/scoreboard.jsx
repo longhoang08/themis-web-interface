@@ -39,7 +39,8 @@ class Main extends React.Component {
 			  console.log({problems, contestants})
 			  this.setState({problems, contestants, lastUpdated: new Date()});
 		  })
-		  .catch(() => { // Pass error
+		  .catch((err) => { // Pass error
+			  console.log(err)
 		  });
 	}
 
