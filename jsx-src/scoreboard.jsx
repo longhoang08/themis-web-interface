@@ -36,7 +36,6 @@ class Main extends React.Component {
 				  });
 				  delete contestant.submitCounts;
 			  });
-			  console.log({problems, contestants})
 			  this.setState({problems, contestants, lastUpdated: new Date()});
 		  })
 		  .catch((err) => { // Pass error
@@ -61,7 +60,7 @@ class Main extends React.Component {
 				<th rowSpan={2}>#</th>
 				<th rowSpan={2}>Tên</th>
 				<th rowSpan={2}>Tổng</th>
-				<th colSpan={this.state.problems.length}>Điểm từng bài</th>
+				<th colSpan={this.state.problems.length}>Điểm từng bài | Số lần nộp</th>
 			</tr>
 			<FlipMove typeName={'tr'}>
 				{this.state.problems.map(prob => <th key={prob}>{prob}</th>)}

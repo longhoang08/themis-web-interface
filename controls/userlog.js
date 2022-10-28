@@ -25,6 +25,7 @@ function addUser(username, cb = () => {
 	UserLog.findOne({username: username}, (err, user) => {
 		if (err) return cb(err);
 		if (user === null) {
+			debug(`creating new user ${username}`)
 			UserLog.insert({
 				username: username, submits: {}, scores: {}, highestScores: {submitCounts: {}}
 			}, (err, user) => {
