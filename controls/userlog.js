@@ -102,6 +102,7 @@ function addScore(username, problem, contents) {
 				[`highestScores.submitCounts.${problem}`]: submitCount,
 			}
 		});
+		debug('score after update', user.highestScores[problem]);
 	});
 }
 
