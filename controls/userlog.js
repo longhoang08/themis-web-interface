@@ -87,11 +87,7 @@ function addScore(username, problem, contents) {
 			return; // Can't happen
 		}
 		const currentScore = user.highestScores[problem] || 0;
-
-		debug({contents, username});
 		const highestScore = Math.max(currentScore, contents.verdict);
-		debug({highestScore, username});
-
 		const submitCount = (user.submitCounts && user.submitCounts[problem] || 0) + 1;
 
 		UserLog.update({_id: user._id}, {
@@ -101,7 +97,6 @@ function addScore(username, problem, contents) {
 				[`highestScores.${problem}`]: highestScore,
 			}
 		});
-		debug('score after update', user.highestScores[problem]);
 	});
 }
 
