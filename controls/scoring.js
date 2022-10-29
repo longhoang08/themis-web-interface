@@ -19,6 +19,7 @@ getUsers((err, users) => {
 		debug(JSON.stringify(user.scores));
 		scores[user.username] = user.scores;
 		highestScores[user.username] = user.highestScores;
+		highestScores.submitCounts = user.submitCounts;
 	});
 });
 

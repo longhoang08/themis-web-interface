@@ -27,7 +27,7 @@ function addUser(username, cb = () => {
 		if (user === null) {
 			debug(`creating new user ${username}`);
 			UserLog.insert({
-				username: username, submits: {}, scores: {}, highestScores: {submitCounts: {}}
+				username: username, submits: {}, scores: {}, highestScores: {}, submitCounts: {},
 			}, (err, user) => {
 				if (cb) cb(err, user);
 			});
@@ -87,18 +87,17 @@ function addScore(username, problem, contents) {
 			return; // Can't happen
 		}
 		const currentScore = user.highestScores[problem] || 0;
-		debug({'highestScores': user.highestScores, currentScore});
 
 		debug({contents, username});
 		const highestScore = Math.max(currentScore, contents.verdict);
 		debug({highestScore, username});
 
-		const submitCount = (user.highestScores && user.highestScores.submitCounts && user.highestScores.submitCounts[problem] || 0) + 1;
+		const submitCount = (user.submitCounts && user.submitCounts[problem] || 0) + 1;
 
 		UserLog.update({_id: user._id}, {
 			$set: {
 				[`scores.${problem}`]: contents,
-				[`highestScores.submitCounts.${problem}`]: submitCount,
+				[`submitCounts.${problem}`]: submitCount,
 				[`highestScores.${problem}`]: highestScore,
 			}
 		});
