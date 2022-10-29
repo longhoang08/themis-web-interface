@@ -14,6 +14,9 @@ const highestScores = {};
 
 getUsers((err, users) => {
 	users.forEach(user => {
+		debug(user.username);
+		debug(JSON.stringify(user.highestScores));
+		debug(JSON.stringify(user.scores));
 		scores[user.username] = user.scores;
 		highestScores[user.username] = user.highestScores;
 	});
