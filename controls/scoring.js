@@ -1,3 +1,4 @@
+const {getUsers} = require('./userlog');
 const debug = require('debug')('themis:scoring');
 
 /**
@@ -6,6 +7,10 @@ const debug = require('debug')('themis:scoring');
  * collection, that contains the score for each contestant/problem.
  */
 
+
+getUsers((err, users) => {
+	debug({users});
+});
 
 const scores = {};
 const highestScores = {};

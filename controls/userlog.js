@@ -25,7 +25,7 @@ function addUser(username, cb = () => {
 	UserLog.findOne({username: username}, (err, user) => {
 		if (err) return cb(err);
 		if (user === null) {
-			debug(`creating new user ${username}`)
+			debug(`creating new user ${username}`);
 			UserLog.insert({
 				username: username, submits: {}, scores: {}, highestScores: {submitCounts: {}}
 			}, (err, user) => {
@@ -43,6 +43,16 @@ function addUser(username, cb = () => {
 function getUser(username, cb) {
 	UserLog.findOne({username: username}, cb);
 }
+
+/**
+ * Receives the user's log async-ly.
+ * @param  {string}   username The user's username.
+ * @param  {Function} cb       The callback function (err, log) => { }
+ */
+function getUsers(username, cb) {
+	UserLog.find({}, cb);
+}
+
 
 /**
  * Add a submission. Content will be hashed before saving.
@@ -93,5 +103,5 @@ function addScore(username, problem, contents) {
 }
 
 module.exports = {
-	addUser: addUser, addSubmit: addSubmit, addScore: addScore
+	addUser: addUser, addSubmit: addSubmit, addScore: addScore, getUsers: getUsers
 };
