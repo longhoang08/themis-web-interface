@@ -3,6 +3,9 @@ themis-web
 # Configuration file
 config.js
 data/account.xml
+data/submit/*
+!data/submit/readme.md
+themis-web.zip
 
 # Fetchable files
 public/css/bootstrap/*
