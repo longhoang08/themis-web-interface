@@ -95,7 +95,7 @@ function addScore(username, problem, contents) {
 			$set: {
 				[`scores.${problem}`]: contents,
 				[`highestScores.${problem}`]: highestScore,
-				[`highestScores.submitCount.${problem}`]: submitCount,
+				[`highestScores.submitCounts.${problem}`]: submitCount,
 			}
 		});
 	});
