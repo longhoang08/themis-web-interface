@@ -8,12 +8,16 @@ const debug = require('debug')('themis:scoring');
  */
 
 
-getUsers((err, users) => {
-	debug({users});
-});
 
 const scores = {};
 const highestScores = {};
+
+getUsers((err, users) => {
+	users.forEach(user => {
+		scores[user.username] = user.scores;
+		highestScores[user.username] = user.highestScores;
+	});
+});
 
 
 /**

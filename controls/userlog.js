@@ -47,9 +47,8 @@ function getUser(username, cb) {
 /**
  * Receives the user's log async-ly.
  * @param  {string}   username The user's username.
- * @param  {Function} cb       The callback function (err, log) => { }
  */
-function getUsers(username, cb) {
+function getUsers(cb) {
 	UserLog.find({}, cb);
 }
 
