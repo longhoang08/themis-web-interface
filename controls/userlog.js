@@ -87,7 +87,7 @@ function addScore(username, problem, contents) {
 			return; // Can't happen
 		}
 		const currentScore = user.scores[problem] || 0;
-		debug({contents})
+		debug({contents});
 		const highestScore = Math.max(currentScore, contents);
 
 		const submitCount = (user.highestScores && user.highestScores.submitCounts && user.highestScores.submitCounts[problem] || 0) + 1;
