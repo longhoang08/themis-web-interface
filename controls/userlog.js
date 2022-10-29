@@ -98,8 +98,8 @@ function addScore(username, problem, contents) {
 		UserLog.update({_id: user._id}, {
 			$set: {
 				[`scores.${problem}`]: contents,
-				[`highestScores.${problem}`]: highestScore,
 				[`highestScores.submitCounts.${problem}`]: submitCount,
+				[`highestScores.${problem}`]: highestScore,
 			}
 		});
 		debug('score after update', user.highestScores[problem]);
